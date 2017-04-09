@@ -1,16 +1,16 @@
 from flask import g
 from flask import render_template, session, redirect, url_for
 from flask import flash
-from flask_login import login_user, logout_user,login_required,current_user
+from flask_login import login_user, logout_user, login_required, current_user
 
-from app import app, lm
-from app.forms import LoginForm
+from app import app, lm, db
+from app.forms import LoginForm, RegisterForm
 from app.models import User
 
 
 @app.route('/')
 def index():
-    return render_template('index.html', form=form)
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -30,6 +30,22 @@ def login():
     return render_template('login.html', title="登录", form=form)
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    name=form.name.data,
+                    password=form.password1.data,
+                    address=form.address.data,
+                    sex=form.sex.data,
+                    phone=form.phone.data)
+        db.session.add(user)
+        flash('注册成功')
+        return redirect(url_for('login'))
+    return render_template('register.html', title="注册", form=form)
+
+
 # 登出
 @login_required
 @app.route('/logout')
@@ -38,10 +54,12 @@ def logout():
     flash("登出成功")
     return redirect(url_for('login'))
 
-#设置请求前的全局用户
+
+# 设置请求前的全局用户
 @app.before_request
 def before_request():
     g.user = current_user
+
 
 @app.errorhandler(404)
 def page_not_found(e):

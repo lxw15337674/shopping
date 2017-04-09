@@ -15,9 +15,13 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-    def __init__(self, name, password):
+    def __init__(self, name, password,address,sex,phone,email):
         self.name = name
         self.password = password
+        self.address = address
+        self.sex = sex
+        self.phone = phone
+        self.email = email
 
     # 是否被认证
     def is_authenticated(self):
