@@ -1,16 +1,10 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}主页{% endblock %}
+{% block title %}搜索结果{% endblock %}
 {% block page_content %}
-    <form class="form form-horizontal" method="post" role="form">
-        {{ form.hidden_tag() }}
-        {{ wtf.form_field(form.search) }}
-        {{ wtf.form_field(form.submit) }}
-    </form>
     <div class="page-header">
         <div class="list-group">
-            {% for fruit in fruits %}
+            {% for fruit in results %}
                 <a href="#" class="list-group-item">
                     <h4 class="list-group-item-heading">
                         {{ fruit.name }}

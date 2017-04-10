@@ -31,3 +31,7 @@ class UploadForm(FlaskForm):
     introduction = StringField('商品介绍', validators=[DataRequired()])
     price = StringField('商品价格', validators=[DataRequired(),Regexp('[0-9]*', message='必须为数字')])
     submit = SubmitField('提交')
+
+class SearchForm(FlaskForm):
+    search = StringField('search', validators=[DataRequired(message="搜索不能为空")])
+    submit = SubmitField('搜索')

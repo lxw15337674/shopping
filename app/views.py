@@ -4,7 +4,7 @@ from flask import flash
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app import app, lm, db
-from app.forms import LoginForm, RegisterForm, UploadForm
+from app.forms import LoginForm, RegisterForm, UploadForm, SearchForm
 from app.models import User, Fruits
 
 
@@ -19,17 +19,19 @@ def index():
 #     fruits = Fruits.query.filter_by().all()
 #     posts = fruits.paginate(page, POSTS_PER_PAGE, False)
 
-@app.route('/goods')
+@app.route('/goods', methods=['GET', 'POST'])
 def goods():
+    form = SearchForm()
     fruits = Fruits.query.filter_by().all()
-    print(type(fruits))
-    for a in fruits:
-        print(a.name)
-    return render_template('goods.html',title="商品",fruits=fruits)
+    if form.validate_on_submit():
+        print(123)
+        return redirect(url_for('search_results', query=form.search.data))
+    return render_template('goods.html', title="商品", fruits=fruits,form=form)
 
 
 # 管理员上传水果商品信息
 @app.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload():
     form = UploadForm()
     if form.validate_on_submit():
@@ -44,6 +46,7 @@ def upload():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    searchform = SearchForm()
     if form.validate_on_submit():
         name = form.name.data
         user = User.query.filter_by(name=name).first()
@@ -55,7 +58,18 @@ def login():
             login_user(user, form.remember_me.data)
             flash("登陆成功")
             return redirect(url_for("index"))
+    if searchform.validate_on_submit():
+        return redirect(url_for('search_results', query=searchform.search.data))
     return render_template('login.html', title="登录", form=form)
+
+
+# 搜索功能
+@app.route('/search_results/<query>' )
+@login_required
+def search_results(query):
+    results = Fruits.query.filter_by(name=query).all()
+    return render_template('search_results.html',
+                           results=results)
 
 
 @app.route('/register', methods=['GET', 'POST'])
