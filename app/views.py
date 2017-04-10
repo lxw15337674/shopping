@@ -4,13 +4,41 @@ from flask import flash
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app import app, lm, db
-from app.forms import LoginForm, RegisterForm
-from app.models import User
+from app.forms import LoginForm, RegisterForm, UploadForm
+from app.models import User, Fruits
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+# @app.route('/goods')
+# @app.route('/goods/<int:pages>')
+# def goods(page=1):
+#     fruits = Fruits.query.filter_by().all()
+#     posts = fruits.paginate(page, POSTS_PER_PAGE, False)
+
+@app.route('/goods')
+def goods():
+    fruits = Fruits.query.filter_by().all()
+    print(type(fruits))
+    for a in fruits:
+        print(a.name)
+    return render_template('goods.html',title="商品",fruits=fruits)
+
+
+# 管理员上传水果商品信息
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        fruit = Fruits(name=form.name.data, introduction=form.introduction.data, price=form.price.data)
+        db.session.add(fruit)
+        db.session.commit()
+        flash('上传成功')
+        return redirect(url_for('upload'))
+    return render_template('upload.html', title="上传", form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -41,6 +69,7 @@ def register():
                     sex=form.sex.data,
                     phone=form.phone.data)
         db.session.add(user)
+        db.session.commit()
         flash('注册成功')
         return redirect(url_for('login'))
     return render_template('register.html', title="注册", form=form)

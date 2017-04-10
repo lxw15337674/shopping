@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField, SubmitField, RadioField
 from wtforms.validators import DataRequired,  EqualTo, Length, Regexp, Email, ValidationError
 
-from app.models import User
+from app.models import User, Fruits
 
 
 class LoginForm(FlaskForm):
@@ -10,7 +10,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('密码', validators=[DataRequired()])
     remember_me = BooleanField('记住登录状态', default=False)
     submit = SubmitField('登录')
-
 
 class RegisterForm(FlaskForm):
     name = StringField('用户名', validators=[DataRequired()])
@@ -26,3 +25,9 @@ class RegisterForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(name=field.data).first():
             raise ValidationError('用户名已经被使用.')
+
+class UploadForm(FlaskForm):
+    name = StringField('商品名称', validators=[DataRequired()])
+    introduction = StringField('商品介绍', validators=[DataRequired()])
+    price = StringField('商品价格', validators=[DataRequired(),Regexp('[0-9]*', message='必须为数字')])
+    submit = SubmitField('提交')

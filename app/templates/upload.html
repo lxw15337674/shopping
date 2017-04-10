@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}上传{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>上传</h1>
+    </div>
+    <div class="col-md-4">
+        <form class="form form-horizontal" method="post" role="form">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_field(form.name)}}
+            {{ wtf.form_field(form.price) }}
+            {{ wtf.form_field(form.introduction )}}
+            {{ wtf.form_field(form.submit) }}
+        </form>
+    </div>
+{% endblock %}

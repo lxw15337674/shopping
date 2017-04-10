@@ -35,6 +35,10 @@ class User(db.Model):
     def is_anonymous(self):
         return False
 
+    # 是否是管理员
+    def is_admin(self):
+        return self.is_admin
+
     def get_id(self):
         return str(self.id)
 
@@ -45,6 +49,11 @@ class Fruits(db.Model):
     introduction = db.Column(db.String(1000))
     photo = db.Column(db.String(64))
     price = db.Column(db.Integer)
+
+    def __init__(self, name, introduction,price):
+        self.name = name
+        self.introduction = introduction
+        self.price = price
 
 
 class Order(db.Model):
