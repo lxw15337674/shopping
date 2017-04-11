@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h1>{{ fruit.name }}</h1>
+        <h2>￥:{{ fruit.price }}</h2>
+        商品介绍:
+        <div class="well">
+            <p>{{ fruit.introduction }}</p>
+        </div>
+    </div>
+   <a href="{{ url_for('cart',id = fruit.id) }}" class="btn btn-default btn-lg" role="button">加入购物车</a>
+
+{% endblock %}
+

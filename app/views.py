@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from app import app, lm, db
 from app.forms import LoginForm, RegisterForm, UploadForm, SearchForm
-from app.models import User, Fruits
+from app.models import User, Fruits, Order, OrderItem
 
 
 @app.route('/')
@@ -19,14 +19,45 @@ def index():
 #     fruits = Fruits.query.filter_by().all()
 #     posts = fruits.paginate(page, POSTS_PER_PAGE, False)
 
+# 商品列表
 @app.route('/goods', methods=['GET', 'POST'])
 def goods():
     form = SearchForm()
     fruits = Fruits.query.filter_by().all()
     if form.validate_on_submit():
-        print(123)
         return redirect(url_for('search_results', query=form.search.data))
-    return render_template('goods.html', title="商品", fruits=fruits,form=form)
+    return render_template('goods.html', title="商品", fruits=fruits, form=form)
+
+
+# 商品详细信息(购买页面)
+@app.route('/fruit/<id>')
+def fruit(id):
+    fruit = Fruits.query.filter_by(id=id).first()
+    if fruit is None:
+        flash("不存在该商品")
+        return redirect(url_for('goods'))
+    return render_template('fruit.html', fruit=fruit)
+
+
+# 加入购物车
+@app.route('/cart/<id>')
+@login_required
+def cart(id, num=1):
+    order = Order.query.filter_by(user_id=g.user.id, status='购物车').first()  # 购物车
+    # 如果购物车中存在该商品则直接更新数量,如果不存在则增加该商品
+    target = int(id)
+    for a in order.items:
+        if target == a.fruit_id:
+            a.num += num
+            db.session.commit()
+            flash('已增加数量')
+            return redirect(url_for('fruit',id=id))
+    orderitem = OrderItem()
+    orderitem.add(fruit_id=id, num=num, order_id=order.id)
+    db.session.add(orderitem)
+    db.session.commit()
+    flash('已加入购物车')
+    return redirect(url_for('fruit', id=id))
 
 
 # 管理员上传水果商品信息
@@ -43,6 +74,7 @@ def upload():
     return render_template('upload.html', title="上传", form=form)
 
 
+# 登录
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -56,15 +88,20 @@ def login():
             flash('密码错误')
         else:
             login_user(user, form.remember_me.data)
+            # 初始化,创建购物车
+            if Order.query.filter_by(user_id=g.user.id, status='购物车').first() is None:
+                order = Order(g.user.id)
+                db.session.add(order)
+                db.session.commit()
             flash("登陆成功")
-            return redirect(url_for("index"))
+            return redirect(url_for("goods"))
     if searchform.validate_on_submit():
         return redirect(url_for('search_results', query=searchform.search.data))
     return render_template('login.html', title="登录", form=form)
 
 
 # 搜索功能
-@app.route('/search_results/<query>' )
+@app.route('/search_results/<query>')
 @login_required
 def search_results(query):
     results = Fruits.query.filter_by(name=query).all()
@@ -72,6 +109,7 @@ def search_results(query):
                            results=results)
 
 
+# 注册功能
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()

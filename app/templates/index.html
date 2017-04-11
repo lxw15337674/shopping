@@ -3,7 +3,13 @@
 {% block title %}主页{% endblock %}
 {% block page_content %}
     <div class="page-header">
-        <h1>Hello, {% if g.user.name %}{{ g.user.name }}{% else %}陌生人{% endif %}!</h1>
+        <h2>
+            你好,
+            {% if g.user.name %}
+                {{ g.user.name }},<a href="{{ url_for('goods') }}">预览商品请点击</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">请先登录!</a>
+            {% endif %}
+        </h2>
     </div>
-
 {% endblock %}
