@@ -75,17 +75,22 @@ class Order(db.Model):
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fruit_id = db.Column(db.Integer)
+    fruit_name = db.Column(db.String(64))
     price = db.Column(db.Integer)
     num = db.Column(db.Integer)
     cost = db.Column(db.Integer)
     Order_id = db.Column(db.Integer, db.ForeignKey('order.id'), )
 
     # 添加商品到购物车
-    def add(self, fruit_id, num, order_id):
+    def add(self, fruit_id,num, order_id):
         self.fruit_id = fruit_id
+        self.fruit_name = Fruits.query.filter_by(id=fruit_id).first().name
         self.price = Fruits.query.filter_by(id=fruit_id).first().price
         self.num = num
-        self.cost = self.price * num
+        self.cost = self.price * self.num
         self.Order_id = order_id
 
-
+    # 增加商品数量
+    def addnum(self, num):
+        self.num +=num
+        self.cost = self.price * self.num

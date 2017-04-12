@@ -1,0 +1,21 @@
+<table class="table table-bordered">
+    <caption>明细</caption>
+    <thead>
+    <tr>
+        <th>名字</th>
+        <th>单价</th>
+        <th>数量</th>
+        <th>小计</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for fruit in order.items %}
+        <tr>
+            <td>{{ fruit.fruit_name}}</td>
+            <td>{{ fruit.price }}</td>
+            <td>{{ fruit.num }}</td>
+            <td>{{ fruit.cost }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

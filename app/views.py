@@ -1,5 +1,5 @@
 from flask import g
-from flask import render_template, session, redirect, url_for
+from flask import render_template, redirect, url_for
 from flask import flash
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -48,16 +48,25 @@ def cart(id, num=1):
     target = int(id)
     for a in order.items:
         if target == a.fruit_id:
-            a.num += num
+            a.addnum(num)
             db.session.commit()
             flash('已增加数量')
-            return redirect(url_for('fruit',id=id))
+            return redirect(url_for('fruit', id=id))
     orderitem = OrderItem()
     orderitem.add(fruit_id=id, num=num, order_id=order.id)
     db.session.add(orderitem)
     db.session.commit()
     flash('已加入购物车')
     return redirect(url_for('fruit', id=id))
+
+#查看购物车
+@app.route('/buy')
+@login_required
+def buy():
+    order = Order.query.filter_by(user_id=g.user.id, status='购物车').first()  # 购物车
+    return render_template('buy.html',order=order)
+
+
 
 
 # 管理员上传水果商品信息
