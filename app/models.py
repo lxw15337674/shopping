@@ -95,7 +95,8 @@ class OrderItem(db.Model):
         self.cost = self.price * self.num
         self.Order_id = order_id
 
-    # 增加商品数量
-    def addnum(self, num):
+    # 改变商品数量
+    def changenum(self, num):
         self.num +=num
         self.cost = self.price * self.num
+

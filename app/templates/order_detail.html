@@ -11,10 +11,15 @@
     <tbody>
     {% for fruit in order.items %}
         <tr>
-            <td>{{ fruit.fruit_name}}</td>
+            <td>{{ fruit.fruit_name }}</td>
             <td>{{ fruit.price }}</td>
-            <td>{{ fruit.num }}</td>
+            <td>{{ fruit.num }}
+                <a href="{{ url_for('changenum',id=fruit.id,num=1) }}" class="btn btn-default btn-sm" role="button">增加</a>
+                <a href="{{ url_for('changenum',id=fruit.id,num=-1) }}" class="btn btn-default btn-sm" role="button">减少</a>
+
+            </td>
             <td>{{ fruit.cost }}</td>
+
         </tr>
     {% endfor %}
     </tbody>

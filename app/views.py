@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for
 from flask import flash
 from flask_login import login_user, logout_user, login_required, current_user
 
-from app import app, lm, db
+from app import app, lm, db, date
 from app.forms import LoginForm, RegisterForm, UploadForm, SearchForm
 from app.models import User, Fruits, Order, OrderItem
 
@@ -48,8 +48,8 @@ def cart(id, num=1):
     target = int(id)
     for a in order.items:
         if target == a.fruit_id:
-            a.addnum(num) #更新订单商品数量
-            order.updatecost() #更新订单价格
+            a.addnum(num)  # 更新订单商品数量
+            order.updatecost()  # 更新订单价格
             db.session.commit()
             flash('已增加数量')
             return redirect(url_for('fruit', id=id))
@@ -61,27 +61,44 @@ def cart(id, num=1):
     flash('已加入购物车')
     return redirect(url_for('fruit', id=id))
 
-#查看购物车
+
+# 查看购物车
 @app.route('/buy')
 @login_required
 def buy():
     order = Order.query.filter_by(user_id=g.user.id, status='购物车').first()  # 购物车
-    return render_template('buy.html',order=order)
+    return render_template('buy.html', order=order)
 
-#结算
+
+# 结算
 @app.route('/order/<id>')
 @login_required
 def order(id):
     order = Order.query.filter_by(id=id, status='购物车').first()  # 购物车
     order.status = '未支付'
+    order.time = date.date()
     db.session.commit()
     flash('已提交')
     # 再给用户创建购物车
     order = Order(g.user.id)
     db.session.add(order)
     db.session.commit()
-    return render_template('order.html',order=order)
+    return render_template('order.html', order=order)
 
+
+# 购物车页面改变商品数量
+@app.route('/changenum/<id>/<num>', methods=['GET'])
+@login_required
+def changenum(id, num):
+    fruit = OrderItem.query.filter_by(id=id).first()
+    num = int(num)
+    fruit.changenum(num)  # 更新订单商品数量
+    if fruit.num<=0:
+        db.session.delete(fruit)
+    order = Order.query.filter_by(id=fruit.Order_id).first()  # 购物车
+    order.updatecost()  # 更新订单价格
+    db.session.commit()
+    return redirect(url_for('buy'))
 
 
 # 管理员上传水果商品信息
