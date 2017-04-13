@@ -69,7 +69,12 @@ class Order(db.Model):
         # 初始化用户的购物车(首先检查用户是否有购物车, 没有就添加)
         self.user_id = user_id
         self.status = "购物车"
-
+    #更新价格
+    def updatecost(self):
+        cost = 0
+        for a in self.items:
+            cost +=a.cost
+        self.cost = cost
 
 # 订单的单个商品
 class OrderItem(db.Model):

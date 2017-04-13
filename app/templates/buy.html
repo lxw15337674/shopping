@@ -2,12 +2,19 @@
 
 {% block page_content %}
     <div class="page-header">
-        <h1>购物车</h1>
-        <div >
-             {% include 'order_detail.html' %}
-        </div>
-    </div>
-    <a href="#" class="btn btn-default btn-lg" role="button">去结算</a>
-
+        {% if order.items %}
+            <h1>购物车</h1>
+            <div>
+                {% include 'order_detail.html' %}
+            </div>
+            </div>
+            <div class="div-inline">
+                总价:{{ order.cost }}
+                <a href="{{ url_for('order',id = order.id) }}" class="btn btn-default btn-lg" role="button">去结算</a>
+            </div>
+        {% else %}
+            <h2>购物车空空如也,请到首页选购</h2>
+            <a href="{{ url_for('goods') }}" class="btn btn-default btn-lg" role="button">去首页</a>
+        {% endif %}
 {% endblock %}
 

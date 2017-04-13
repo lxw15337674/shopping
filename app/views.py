@@ -48,13 +48,15 @@ def cart(id, num=1):
     target = int(id)
     for a in order.items:
         if target == a.fruit_id:
-            a.addnum(num)
+            a.addnum(num) #更新订单商品数量
+            order.updatecost() #更新订单价格
             db.session.commit()
             flash('已增加数量')
             return redirect(url_for('fruit', id=id))
     orderitem = OrderItem()
     orderitem.add(fruit_id=id, num=num, order_id=order.id)
     db.session.add(orderitem)
+    order.updatecost()  # 更新订单价格
     db.session.commit()
     flash('已加入购物车')
     return redirect(url_for('fruit', id=id))
@@ -66,6 +68,19 @@ def buy():
     order = Order.query.filter_by(user_id=g.user.id, status='购物车').first()  # 购物车
     return render_template('buy.html',order=order)
 
+#结算
+@app.route('/order/<id>')
+@login_required
+def order(id):
+    order = Order.query.filter_by(id=id, status='购物车').first()  # 购物车
+    order.status = '未支付'
+    db.session.commit()
+    flash('已提交')
+    # 再给用户创建购物车
+    order = Order(g.user.id)
+    db.session.add(order)
+    db.session.commit()
+    return render_template('order.html',order=order)
 
 
 
