@@ -3,13 +3,16 @@
 
 {% block title %}登录{% endblock %}
 {% block page_content %}
-<div class="page-header">
- <h1>核对订单信息</h1>
-</div>
-<div class="col-md-4">
-    收货人地址:
-    支付方式:
-    总商品金额: {{ order.cost }}
-    <a href="#" class="btn btn-default btn-lg" role="button">支付</a>
-</div>
+    <div class="page-header">
+        <h1>订单信息</h1>
+    </div>
+    <h2>收货人地址: {{ order.address }}</h2>
+    <h2>支付方式: 货到付款</h2>
+    <h2>总商品金额: {{ order.cost }}</h2>
+    <div>
+        {% include 'order_detail.html' %}
+    </div>
+    {% if order.status =='未支付' %}
+        <a href="{{ url_for('pay',id=order.id) }}" class="btn btn-default btn-lg" role="button">支付</a>
+    {% endif %}
 {% endblock %}

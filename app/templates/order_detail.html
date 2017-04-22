@@ -14,9 +14,10 @@
             <td>{{ fruit.fruit_name }}</td>
             <td>{{ fruit.price }}</td>
             <td>{{ fruit.num }}
+                {% if order.status =='购物车' %}
                 <a href="{{ url_for('changenum',id=fruit.id,num=1) }}" class="btn btn-default btn-sm" role="button">增加</a>
                 <a href="{{ url_for('changenum',id=fruit.id,num=-1) }}" class="btn btn-default btn-sm" role="button">减少</a>
-
+                {% endif %}
             </td>
             <td>{{ fruit.cost }}</td>
 

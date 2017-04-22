@@ -33,6 +33,6 @@ class UploadForm(FlaskForm):
     submit = SubmitField('提交')
 
 class SearchForm(FlaskForm):
-    search = StringField('search', validators=[DataRequired(message="搜索不能为空")])
+    search = StringField('search',validators=[DataRequired(message="搜索不能为空")])
     submit = SubmitField('搜索')
 

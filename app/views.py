@@ -48,7 +48,7 @@ def cart(id, num=1):
     target = int(id)
     for a in order.items:
         if target == a.fruit_id:
-            a.addnum(num)  # 更新订单商品数量
+            a.changenum(num)  # 更新订单商品数量
             order.updatecost()  # 更新订单价格
             db.session.commit()
             flash('已增加数量')
@@ -69,20 +69,38 @@ def buy():
     order = Order.query.filter_by(user_id=g.user.id, status='购物车').first()  # 购物车
     return render_template('buy.html', order=order)
 
+@app.route('/pay/<id>')
+@login_required
+def pay(id):
+    order = Order.query.filter_by(id=id).first()  # 购物车
+    order.status = '完成'
+    db.session.commit()
+    flash("订单完成")
+    return render_template('order.html', order=order)
 
+
+#用于显示订单
+@app.route('/list')
+@login_required
+def list():
+    user = User.query.filter_by(id=g.user.id).first()
+    return render_template('list.html',user=user)
 # 结算
 @app.route('/order/<id>')
 @login_required
 def order(id):
-    order = Order.query.filter_by(id=id, status='购物车').first()  # 购物车
-    order.status = '未支付'
-    order.time = date.date()
-    db.session.commit()
-    flash('已提交')
-    # 再给用户创建购物车
-    order = Order(g.user.id)
-    db.session.add(order)
-    db.session.commit()
+    order = Order.query.filter_by(id=id).first()
+    if order.status =='购物车':
+        order.status = '未支付'
+        order.time = date.date()
+        order.address = User.query.filter_by(id=g.user.id).first().address
+        db.session.commit()
+        flash('已提交')
+        # 再给用户创建购物车
+        order = Order(g.user.id)
+        db.session.add(order)
+        db.session.commit()
+        return redirect(url_for('order', id=id))
     return render_template('order.html', order=order)
 
 

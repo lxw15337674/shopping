@@ -62,6 +62,7 @@ class Order(db.Model):
     cost = db.Column(db.Integer)
     time = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    address = db.Column(db.String(30))
     status = db.Column(db.String(5))  # 订单属性:购物车,未支付,待发货,已发货,完成
     items = db.relationship('OrderItem', backref='order', lazy='dynamic')
 
@@ -69,6 +70,9 @@ class Order(db.Model):
         # 初始化用户的购物车(首先检查用户是否有购物车, 没有就添加)
         self.user_id = user_id
         self.status = "购物车"
+        self.address = ''
+        self.cost = '0'
+
     #更新价格
     def updatecost(self):
         cost = 0
