@@ -3,21 +3,52 @@ from flask import render_template, redirect, url_for
 from flask import flash
 from flask_login import login_user, logout_user, login_required, current_user
 
-from app import app, lm, db, date
+from app import app, lm, db, date, adminpassword
 from app.forms import LoginForm, RegisterForm, UploadForm, SearchForm
 from app.models import User, Fruits, Order, OrderItem
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    fruits = Fruits.query.filter_by().order_by(Fruits.id.desc()).limit(4).all()
+    return render_template('index.html', fruits=fruits)
 
 
-# @app.route('/goods')
-# @app.route('/goods/<int:pages>')
-# def goods(page=1):
-#     fruits = Fruits.query.filter_by().all()
-#     posts = fruits.paginate(page, POSTS_PER_PAGE, False)
+# 管理员查看用户页面
+@app.route('/admin')
+@login_required
+def admin():
+    if g.user.is_admin():
+        flash("管理员你好")
+    else:
+        flash("不是管理员,不能进入该页面")
+        return redirect(url_for('goods'))
+    alluser = User.query.filter_by().all()
+    return render_template('admin.html',alluser=alluser)
+
+# 管理员查看商品页面
+@app.route('/admin_fruit')
+@login_required
+def admin_fruit():
+    if g.user.is_admin():
+        flash("管理员你好")
+    else:
+        flash("不是管理员,不能进入该页面")
+        return redirect(url_for('goods'))
+    allfruit = Fruits.query.filter_by().all()
+    return render_template('admin_fruit.html',allfruit=allfruit)
+
+# 管理员查看订单页面
+@app.route('/admin_order')
+@login_required
+def admin_order():
+    if g.user.is_admin():
+        flash("管理员你好")
+    else:
+        flash("不是管理员,不能进入该页面")
+        return redirect(url_for('goods'))
+    allorder = Order.query.filter_by().all()
+    return render_template('admin_order.html',allorder=allorder)
 
 # 商品列表
 @app.route('/goods', methods=['GET', 'POST'])
@@ -69,6 +100,7 @@ def buy():
     order = Order.query.filter_by(user_id=g.user.id, status='购物车').first()  # 购物车
     return render_template('buy.html', order=order)
 
+
 @app.route('/pay/<id>')
 @login_required
 def pay(id):
@@ -79,18 +111,20 @@ def pay(id):
     return render_template('order.html', order=order)
 
 
-#用于显示订单
+# 用于显示订单
 @app.route('/list')
 @login_required
 def list():
     user = User.query.filter_by(id=g.user.id).first()
-    return render_template('list.html',user=user)
+    return render_template('list.html', user=user)
+
+
 # 结算
 @app.route('/order/<id>')
 @login_required
 def order(id):
     order = Order.query.filter_by(id=id).first()
-    if order.status =='购物车':
+    if order.status == '购物车':
         order.status = '未支付'
         order.time = date.date()
         order.address = User.query.filter_by(id=g.user.id).first().address
@@ -111,7 +145,7 @@ def changenum(id, num):
     fruit = OrderItem.query.filter_by(id=id).first()
     num = int(num)
     fruit.changenum(num)  # 更新订单商品数量
-    if fruit.num<=0:
+    if fruit.num <= 0:
         db.session.delete(fruit)
     order = Order.query.filter_by(id=fruit.Order_id).first()  # 购物车
     order.updatecost()  # 更新订单价格
@@ -123,13 +157,20 @@ def changenum(id, num):
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
+    if g.user.is_admin():
+        pass
+    else:
+        flash("不是管理员,不能进入该页面")
+        return redirect(url_for('goods'))
     form = UploadForm()
     if form.validate_on_submit():
-        fruit = Fruits(name=form.name.data, introduction=form.introduction.data, price=form.price.data)
+        fruit = Fruits(name=form.name.data, introduction=form.introduction.data, price=form.price.data,
+                       photo=form.photo.data)
         db.session.add(fruit)
         db.session.commit()
         flash('上传成功')
         return redirect(url_for('upload'))
+
     return render_template('upload.html', title="上传", form=form)
 
 
@@ -173,12 +214,17 @@ def search_results(query):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        if form.admin.data == adminpassword:
+            admin = True
+        else:
+            admin= False
         user = User(email=form.email.data,
                     name=form.name.data,
                     password=form.password1.data,
                     address=form.address.data,
                     sex=form.sex.data,
-                    phone=form.phone.data)
+                    phone=form.phone.data,
+                    admin=admin)
         db.session.add(user)
         db.session.commit()
         flash('注册成功')

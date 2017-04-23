@@ -7,21 +7,22 @@ class User(db.Model):
     password = db.Column(db.String(64), nullable=False)
     address = db.Column(db.String(64))
     sex = db.Column(db.String(64))
-    phone = db.Column(db.String(64))
+    phone = db.Column(db.String(128))
     email = db.Column(db.String(64))
+    admin = db.Column(db.Boolean, default=False)
     orders = db.relationship('Order', backref='user', lazy='dynamic')
-    is_admin = db.Column(db.Boolean)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.name
 
-    def __init__(self, name, password, address, sex, phone, email):
+    def __init__(self, name, password, address, sex, phone, email, admin):
         self.name = name
         self.password = password
         self.address = address
         self.sex = sex
         self.phone = phone
         self.email = email
+        self.admin = admin
 
     # 是否被认证
     def is_authenticated(self):
@@ -37,7 +38,7 @@ class User(db.Model):
 
     # 是否是管理员
     def is_admin(self):
-        return self.is_admin
+        return self.admin
 
     def get_id(self):
         return str(self.id)
@@ -47,13 +48,20 @@ class Fruits(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     introduction = db.Column(db.String(1000))
-    photo = db.Column(db.String(64))
+    photo = db.Column(db.String(140))
     price = db.Column(db.Integer)
 
-    def __init__(self, name, introduction, price):
+    def __init__(self, name, introduction, price, photo):
         self.name = name
         self.introduction = introduction
         self.price = price
+        self.photo = photo
+
+    # 头像
+    def avatar(self):
+        fruit = Fruits.query.filter_by(id=self.id).first()
+        img = fruit.photo
+        return img
 
 
 # 订单
@@ -73,12 +81,13 @@ class Order(db.Model):
         self.address = ''
         self.cost = '0'
 
-    #更新价格
+    # 更新价格
     def updatecost(self):
         cost = 0
         for a in self.items:
-            cost +=a.cost
+            cost += a.cost
         self.cost = cost
+
 
 # 订单的单个商品
 class OrderItem(db.Model):
@@ -91,7 +100,7 @@ class OrderItem(db.Model):
     Order_id = db.Column(db.Integer, db.ForeignKey('order.id'), )
 
     # 添加商品到购物车
-    def add(self, fruit_id,num, order_id):
+    def add(self, fruit_id, num, order_id):
         self.fruit_id = fruit_id
         self.fruit_name = Fruits.query.filter_by(id=fruit_id).first().name
         self.price = Fruits.query.filter_by(id=fruit_id).first().price
@@ -101,6 +110,5 @@ class OrderItem(db.Model):
 
     # 改变商品数量
     def changenum(self, num):
-        self.num +=num
+        self.num += num
         self.cost = self.price * self.num
-

@@ -4,16 +4,22 @@
 {% block page_content %}
     <div class="page-header">
         <div class="list-group">
+        <div class="row">
             {% for fruit in results %}
-                <a href="#" class="list-group-item">
-                    <h4 class="list-group-item-heading">
-                        {{ fruit.name }}
-                    </h4>
-                    <p class="list-group-item-text">
-                        ￥: <Strong>{{ fruit.price }}</Strong>
-                    </p>
+                <a href="{{ url_for('fruit',id=fruit.id) }}" class="list-group-item col-md-2">
+                    <div align="center">
+                        <img src="{{ fruit.photo }}" width="88" height="88"
+                             class="img-rounded"/>
+                        <h4 class="list-group-item-heading">
+                            {{ fruit.name }}
+                        </h4>
+                        <p class="list-group-item-text">
+                            ￥: <Strong>{{ fruit.price }}</Strong>
+                        </p>
+                    </div>
                 </a>
             {% endfor %}
+        </div>
         </div>
     </div>
 {% endblock %}

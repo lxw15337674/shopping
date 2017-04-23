@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <div class="page-header">
+
+        <table class="table">
+            <caption><h3>用户信息</h3></caption>
+            <thead>
+            <tr>
+                <th>编号</th>
+                <th>名字</th>
+                <th>地址</th>
+                <th>性别</th>
+                <th>手机号</th>
+                <th>邮箱</th>
+                <th>是否为管理员</th>
+            </tr>
+            </thead>
+            <tbody>
+            {%  for user in alluser %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.address }}</td>
+                <td>{{ user.sex }}</td>
+                <td>{{ user.phone }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.admin }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

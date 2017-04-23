@@ -2,14 +2,54 @@
 
 {% block title %}主页{% endblock %}
 {% block page_content %}
-    <div class="page-header">
-        <h2>
-            你好,
-            {% if g.user.name %}
-                {{ g.user.name }},<a href="{{ url_for('goods') }}">预览商品请点击</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">请先登录!</a>
-            {% endif %}
-        </h2>
+    <div style="width: auto;margin:auto 80px;">
+        <div class="page-header">
+            <h2>
+                你好,
+                {% if g.user.name %}
+                    {{ g.user.name }},<a href="{{ url_for('goods') }}">预览商品请点击</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">请先登录!</a>
+                {% endif %}
+            </h2>
+        </div>
+        <table class="table">
+            <caption style="color: red;"><h3>促销</h3></caption>
+            <tbody>
+            <tr>
+                <td><h4><strong>迎国庆,全场半价</strong></h4></td>
+            </tr>
+            <tr>
+                <td><h4><strong>英国ASDA超市开业低至五折</strong></h4></td>
+            </tr>
+            </tbody>
+        </table>
+        <hr>
+        <table class="table">
+            <caption>
+                <div style="color: blue;"><h3>新品上市</h3></div>
+            </caption>
+            <tbody>
+            <tr>
+                <td>
+                    {% for fruit in fruits %}
+                        <a href="{{ url_for('fruit',id=fruit.id) }}" class="list-group-item col-md-2">
+                            <div align="center">
+                                <img src="{{ fruit.photo }}" width="88" height="88"
+                                     class="img-rounded"/>
+                                <h4 class="list-group-item-heading">
+                                    {{ fruit.name }}
+                                </h4>
+                                <p class="list-group-item-text">
+                                    ￥: <Strong>{{ fruit.price }}</Strong>
+                                </p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                    </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
+
 {% endblock %}

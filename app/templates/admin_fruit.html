@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <div class="page-header">
+
+        <table class="table" >
+            <caption><h3>商品信息</h3></caption>
+            <thead>
+            <tr>
+                <th>编号</th>
+                <th>名字</th>
+                <th>价格</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in allfruit %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.price }}</td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

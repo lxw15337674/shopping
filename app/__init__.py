@@ -20,4 +20,7 @@ bootstrap = Bootstrap(app)
 
 # 数据库
 db = SQLAlchemy(app)
+
+# 管理员密码
+adminpassword = '123'
 from app import views, models

@@ -15,11 +15,10 @@
     <hr>
     <div class="container">
         <div class="row">
-            {#            <div class="list-group">#}
             {% for fruit in fruits %}
                 <a href="{{ url_for('fruit',id=fruit.id) }}" class="list-group-item col-md-2">
                     <div align="center">
-                        <img src="http://o7opur23b.bkt.clouddn.com/tuxiang.png" width="88" height="88"
+                        <img src="{{ fruit.photo }}" width="88" height="88"
                              class="img-rounded"/>
                         <h4 class="list-group-item-heading">
                             {{ fruit.name }}
@@ -29,9 +28,7 @@
                         </p>
                     </div>
                 </a>
-
             {% endfor %}
-            {#            </div>#}
         </div>
     </div>
 {% endblock %}

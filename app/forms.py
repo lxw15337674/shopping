@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, PasswordField, SubmitField, RadioField
+from wtforms import StringField, BooleanField, PasswordField, SubmitField, RadioField, FileField
 from wtforms.validators import DataRequired,  EqualTo, Length, Regexp, Email, ValidationError
 
-from app.models import User, Fruits
+from app.models import User
 
 
 class LoginForm(FlaskForm):
@@ -20,6 +20,7 @@ class RegisterForm(FlaskForm):
     sex = RadioField('性别', choices=[('男', '男'), ('女', '女')], validators=[DataRequired()])
     phone = StringField('手机号', validators=[DataRequired(), Length(11, 11,message="必须为11位数字"), Regexp('[0-9]*', message='必须为数字')])
     email = StringField('邮箱', validators=[DataRequired(), Email(message="请输入正确的邮箱格式")])
+    admin = StringField('注册管理员密码(用户不用输入该栏)')
     submit = SubmitField('提交')
 
     def validate_username(self, field):
@@ -28,6 +29,7 @@ class RegisterForm(FlaskForm):
 
 class UploadForm(FlaskForm):
     name = StringField('商品名称', validators=[DataRequired()])
+    photo = StringField('商品图片',validators=[DataRequired()])
     introduction = StringField('商品介绍', validators=[DataRequired()])
     price = StringField('商品价格', validators=[DataRequired(),Regexp('[0-9]*', message='必须为数字')])
     submit = SubmitField('提交')
