@@ -6,7 +6,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# 为了实现 CSRF 保护，Flask-WTF设置一个密钥
 app.config.from_object('config')  # 读取配置文件
 
 # 登录
