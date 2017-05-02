@@ -208,6 +208,16 @@ def search_results(query):
     return render_template('search_results.html',
                            results=results)
 
+# 购物车页面改变商品数量
+@app.route('/delete/<id>', methods=['GET'])
+@login_required
+def delete(id):
+    fruit = Fruits.query.filter_by(id=id).first()
+    if fruit:
+        db.session.delete(fruit)
+        db.session.commit()
+        flash("删除成功")
+    return redirect(url_for('admin_fruit'))
 
 # 注册功能
 @app.route('/register', methods=['GET', 'POST'])
