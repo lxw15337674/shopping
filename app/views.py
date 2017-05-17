@@ -24,7 +24,8 @@ def admin():
         flash("不是管理员,不能进入该页面")
         return redirect(url_for('goods'))
     alluser = User.query.filter_by().all()
-    return render_template('admin.html',alluser=alluser)
+    return render_template('admin.html', alluser=alluser)
+
 
 # 管理员查看商品页面
 @app.route('/admin_fruit')
@@ -36,7 +37,8 @@ def admin_fruit():
         flash("不是管理员,不能进入该页面")
         return redirect(url_for('goods'))
     allfruit = Fruits.query.filter_by().all()
-    return render_template('admin_fruit.html',allfruit=allfruit)
+    return render_template('admin_fruit.html', allfruit=allfruit)
+
 
 # 管理员查看订单页面
 @app.route('/admin_order')
@@ -47,8 +49,9 @@ def admin_order():
     else:
         flash("不是管理员,不能进入该页面")
         return redirect(url_for('goods'))
-    allorder = Order.query.filter_by().all()
-    return render_template('admin_order.html',allorder=allorder)
+    allorder = Order.query.filter(Order.status != '购物车').all()
+    return render_template('admin_order.html', allorder=allorder)
+
 
 # 商品列表
 @app.route('/goods', methods=['GET', 'POST'])
@@ -156,7 +159,7 @@ def changenum(id, num):
 # 管理员上传水果商品信息
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
-def upload():
+def upload(id=False):
     if g.user.is_admin():
         pass
     else:
@@ -170,7 +173,6 @@ def upload():
         db.session.commit()
         flash('上传成功')
         return redirect(url_for('upload'))
-
     return render_template('upload.html', title="上传", form=form)
 
 
@@ -208,6 +210,7 @@ def search_results(query):
     return render_template('search_results.html',
                            results=results)
 
+
 # 购物车页面改变商品数量
 @app.route('/delete/<id>', methods=['GET'])
 @login_required
@@ -219,6 +222,7 @@ def delete(id):
         flash("删除成功")
     return redirect(url_for('admin_fruit'))
 
+
 # 注册功能
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -227,7 +231,7 @@ def register():
         if form.admin.data == adminpassword:
             admin = True
         else:
-            admin= False
+            admin = False
         user = User(email=form.email.data,
                     name=form.name.data,
                     password=form.password1.data,
